@@ -34,4 +34,3 @@ def main():
 
 # Menjalankan program utama
 main()
-#Tes
