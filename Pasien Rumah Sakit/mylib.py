@@ -198,7 +198,7 @@ def tambahData(nik):
                 asalKota = stringValidation(title='Masukan Asal Kota Pasien: ')
                 
                 #Menginput jenis penyakit pasien
-                penyakit = stringValidation(title='Masukan Penyakit Pasien: ')
+                penyakit = input('Masukan Penyakit Pasien: ').title()
                 
                 #Menginput jenis pembayaran sesuai dengan aturan yang ada
                 jenisPembayaran = inputJenisPembayaran()
@@ -245,7 +245,7 @@ def subMenu3():
             (1, 'Mengedit Data di Database'),
             (2, 'Kembali Ke Menu Utama')
         ]
-        print('\n============ List Menu Pada Sub Menu 3 =============')
+        print('\n  === List Menu Pada Sub Menu 3 ===')
         tampilanMenu(database=listMenu3)
 
         # Meminta input nomor sesuai pilihan menu
@@ -340,7 +340,7 @@ def ubahData(nik):
                             break
                         #Kolom penyakit
                         elif kolomEdit == 'penyakit':
-                            penyakit = stringValidation(title='Masukan Penyakit Pasien: ')
+                            penyakit = input('Masukan Penyakit Pasien: ').title()
                             konfPenyakit = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Penyakit? [Yes/No]: ').lower()
                             if konfPenyakit in ['yes', 'y', 'ya']:
                                 val[6] = penyakit
@@ -390,7 +390,7 @@ def subMenu4():
             (1, 'Menghapus Data dari Database'),
             (2, 'Kembali Ke Menu Utama')
         ]
-        print('\n============ List Menu Pada Sub Menu 4 =============')
+        print('\n   === List Menu Pada Sub Menu 4 ===')
         tampilanMenu(database=listMenu4)
 
         # Meminta input nomor sesuai pilihan menu
