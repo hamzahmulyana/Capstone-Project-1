@@ -30,8 +30,8 @@ def initialize_db():
         database = {}
         # Mengisi data ke dalam database
         for row in reader:
-            no, nik, nama, jenisKelamin, jenisKamar, asalKota, penyakit, jenisPembayaran = row
-            database.update({int(nik): [int(no), int(nik), nama, jenisKelamin, jenisKamar, asalKota, penyakit, jenisPembayaran]})
+            no, nik, nama, umur, jenisKelamin, jenisKamar, asalKota, penyakit, jenisPembayaran = row
+            database.update({int(nik): [int(no), int(nik), nama, int(umur), jenisKelamin, jenisKamar, asalKota, penyakit, jenisPembayaran]})
     
     return database
 
