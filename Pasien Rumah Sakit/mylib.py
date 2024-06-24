@@ -1,15 +1,8 @@
 from tabulate import tabulate
 
-daftarPasien = {
-    321: [1, 321, 'Raihan', 'Laki-laki', 'REGULER', 'Jogja', 'Diabetes', 'BPJS'],
-    322: [2, 322, 'Lala', 'Perempuan', 'VVIP', 'Semarang', 'Mata Rabun', 'NON BPJS'],
-    323: [3, 323, 'Andi', 'Laki-laki', 'VIP', 'Purwokerto', 'Ginjal', 'NON BPJS'],
-    324: [4, 324, 'Sekar', 'Perempuan', 'VIP', 'Malang', 'Paru-paru', 'BPJS'],
-    325: [5, 325, 'Lintang', 'Perempuan', 'REGULER', 'Surabaya', 'Usus Buntu', 'BPJS']
-}
-
 #Fungsi untuk menampilkan database dalam bentuk tabulate
 def tampilkan(database, header=['No', 'NIK', 'Nama', 'Jenis Kelamin', 'Jenis Kamar', 'Kota', 'Penyakit', 'Jenis Pembayaran']):
+    database = urutNIK(database)
     print(tabulate(database.values(), headers=header, tablefmt='pretty'))
 
 #Fungsi untuk menampilkan menu
@@ -40,6 +33,17 @@ def integerValidation(title, minval=0, maxval=999):
             print('Input Anda Salah. Silahkan inputkan angka!')
     return num
 
+#Fungsi untuk memvalidasi inputan dengan spasi
+def spaceValidation(title):
+    while True:
+        teks = input(title).replace(' ', '')
+        if teks.isalpha() == True:
+            break
+        else:
+            print('Input Anda Salah!')
+    return teks.capitalize()
+
+
 #Fungsi untuk input gender sesuai dengan aturan
 def inputGender():
     while True:
@@ -69,7 +73,7 @@ def inputKamar():
 #Fungsi untuk input jenis pembayaran sesuai aturan
 def inputJenisPembayaran():
     while True:
-        jenisPembayaran = stringValidation(title='Masukan Jenis Pembayaran Pasien: ').lower()
+        jenisPembayaran = spaceValidation(title='Masukan Jenis Pembayaran Pasien: ').lower()
         if jenisPembayaran == 'bpjs':
             return 'BPJS'
         elif jenisPembayaran == 'nonbpjs':
@@ -78,8 +82,35 @@ def inputJenisPembayaran():
             print(f'Jenis Pembayaran {jenisPembayaran} Tidak Tersedia!')
             continue
 
+#Fungsi untuk mengurutkan database di file csv berdasarkan NIK
+def urutNIK(database):
+    #Menyalin item dictionary ke dalam list untuk pengurutan manual
+    items = list(database.items())
+
+    #Menggunakan perulangan untuk melakukan pengurutan item
+    for i in range(len(items)):
+        for j in range(0, len(items)-i-1):
+            if items[j][1][1] > items[j+1][1][1]:
+                #Tukar posisi
+                items[j], items[j+1] = items[j+1], items[j]
+    
+    #Mengubah kembali list yang sudah diurutkan menjadi dictionary
+    database = {key: value for key, value in items}
+
+    #Menjadi Kolom No dari 0 terlebih dahulu 
+    for key, val in enumerate(database.values()):
+        if key != val[0]:
+            database[val[1]][0] = key
+    
+    #Menjadikan Kolom No mulai dari 1
+    for key, val in enumerate(database.values()):
+        if key == val[0]:
+            database[val[1]][0] = key + 1
+    
+    return database
+
 #Fungsi untuk menampilkan menu pada sub menu 1
-def subMenu1():
+def subMenu1(database):
     while True:
         # Menampilkan menu pada sub menu 1
         listMenu1 = [
@@ -98,16 +129,16 @@ def subMenu1():
         # Menjalankan fungsi sesuai pilihan menu
         if bilMenu1 == '1':
             print('\t\t\t=========== Data Pasien Dalam Rumah Sakit ===========')
-            tampilkan(daftarPasien)
+            tampilkan(database)
         elif bilMenu1 == '2':
-            pasienBerdasarkanNIK(daftarPasien)
+            pasienBerdasarkanNIK(database)
         elif bilMenu1 == '3':
             break
         else:
             print('=== Input anda salah. Silahkan input ulang sesuai dengan angka pada Menu! ===')
 
 #Fungsi untuk mencari value berdasarkan NIK nya   
-def pasienBerdasarkanNIK(nik):
+def pasienBerdasarkanNIK(database):
     #Membuat dictionary kosong untuk memasukan data
     dataNIK = {}
 
@@ -116,7 +147,7 @@ def pasienBerdasarkanNIK(nik):
         title='Masukan NIK yang ingin dicari: ',
         maxval=999
     )
-    for key, val in daftarPasien.items():
+    for key, val in database.items():
         if nik == key:
             #Menyimpan seluruh value data pada variabel baru
             valCopy = val[:]
@@ -136,7 +167,7 @@ def pasienBerdasarkanNIK(nik):
         print('=== NIK Tidak Ditemukan Dalam Database! ===')
 
 #Fungsi untuk menampilkan menu pada sub menu 2
-def subMenu2():
+def subMenu2(database):
     while True:
         # Menampilkan menu pada sub menu 2
         listMenu2 = [
@@ -153,19 +184,19 @@ def subMenu2():
 
         # Menjalankan fungsi sesuai pilihan menu
         if bilMenu2 == '1':
-            tambahData(daftarPasien)
+            tambahData(database)
         elif bilMenu2 == '2':
             break
         else:
             print('=== Input anda salah. Silahkan input ulang sesuai dengan angka pada Menu! ===')
 
 #Fungsi menambahkan data
-def tambahData(nik):
+def tambahData(database):
     #Memberikan keterangan untuk inputan
     ketInput = [
         (1, 'Gender', '(L: Laki-laki) dan (P: Perempuan)'),
         (2, 'Kamar', 'VVIP, VIP, REGULER'),
-        (3, 'Jenis Pembayaran', 'BPJS dan NON BPJS (Inputkan tanpa spasi -> nonbpjs)')
+        (3, 'Jenis Pembayaran', 'BPJS dan NON BPJS')
     ]
     print('\n\t\t== Keterangan Untuk Memasukan Data ke Dalam Database ==')
     tampilanMenu(database=ketInput, header=['No', 'Kolom', 'Keterangan'])
@@ -181,12 +212,12 @@ def tambahData(nik):
         #Memvalasidasi bahwa NIK harus berjumlah 3 digit
         if len(str(nik)) == 3:
             #Mencari nik yang sama di database
-            while nik not in daftarPasien.keys():
+            while nik not in database.keys():
                 #Menentukan kolom No pada tabel
-                Nomor = len(daftarPasien) + 1 #Untuk penomoran karena tidak sesuai index jadi panjang data ditambahkan 1
+                Nomor = len(database) + 1 #Untuk penomoran karena tidak sesuai index jadi panjang data ditambahkan 1
                 
                 #Menginput nama pasien dan dimasukan ke variabel nama
-                nama = input('Masukan Nama Pasien: ').capitalize() 
+                nama = input('Masukan Nama Pasien: ').title()
                 
                 #Menginput jenis kelamin sesuai dengan aturan yang ada
                 gender = inputGender()
@@ -212,15 +243,15 @@ def tambahData(nik):
                     
                     #Data yang sudah di input tidak di save
                     if konfirmasi in ['no', 'n', 'tidak']:
-                        print('\n\t\t=== Data Tidak Tersimpan ke Database ===')
+                        print('=== Data Tidak Tersimpan ke Database ===')
                         return
                     
                     #Data yang sudah di input akan di save atau ditambahka ke database
                     elif konfirmasi in ['yes', 'y', 'ya']:
-                        daftarPasien.update({nik: listValue})
+                        database.update({nik: listValue})
                         print('=== Data Sudah Tersimpan ke Database ===')
                         print('\n\t\t\t=========== Data Pasien Dalam Rumah Sakit ===========')
-                        tampilkan(daftarPasien)
+                        tampilkan(database)
                         break
 
                     #Jika salah memasukan konfirmasi input
@@ -238,7 +269,7 @@ def tambahData(nik):
             print('NIK Harus Berjumlah 3 Digit!')
 
 #Fungsi untuk menampilkan menu pada sub menu 3
-def subMenu3():
+def subMenu3(database):
     while True:
         # Menampilkan menu pada sub menu 3
         listMenu3 = [
@@ -255,14 +286,14 @@ def subMenu3():
 
         # Menjalankan fungsi sesuai pilihan menu
         if bilMenu3 == '1':
-            ubahData(daftarPasien)
+            ubahData(database)
         elif bilMenu3 == '2':
             break
         else:
             print('===Input anda salah. Silahkan input ulang!===')
 
 #Fungsi untuk mengubah data pada database
-def ubahData(nik):
+def ubahData(database):
     #Menginput idnik yang ingin diubah
     nik = integerValidation(title='Masukan NIK yang ingin diubah datanya: ')
 
@@ -270,15 +301,14 @@ def ubahData(nik):
     dataSementara = {}
 
     #Melakukan iterasi key dan value pada database
-    for key, val in daftarPasien.items():
+    for key, val in database.items():
         if nik == key:
             #Memasukan data yang NIK nya sama dengan idNik yang dimasukan
-            dataSementara.update({nik: daftarPasien[nik]})
+            dataSementara.update({nik: database[nik]})
             tampilkan(dataSementara)
 
             while True:
                 #Melakukan konfirmasi kepada user
-                print('=== JIKA KOLOM TERDAPAT SPASI MAKA INPUTKAN TANPA SPASI ===')
                 konfirmasi = stringValidation(title='Apakah anda yakin ingin mengedit data ini? [Yes/No]: ').lower()
                 
                 #Jika user menginputkan tidak
@@ -290,15 +320,17 @@ def ubahData(nik):
                 elif konfirmasi in ['yes', 'y', 'ya']:
                     while True:
                         #Memberi pilihan keuser kolom mana yang ingin di edit
-                        kolomEdit = stringValidation(title='Masukan kolom yang ingin di edit: ').lower()
+                        kolomEdit = spaceValidation('Masukan Kolom Yang Ingin di Edit: ').lower()
                         #Kolom nama
                         if kolomEdit == 'nama':
-                            nama = stringValidation(title='Masukan Nama Pasien: ')
+                            nama = input('Masukan Nama Pasien: ').title()
                             konfNama = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Nama? [Yes/No]: ').lower()
                             if konfNama in ['yes', 'y', 'ya']:
                                 val[2] = nama
+                                print('Data Pada Database Telah Di Pebaharui')
                                 break
                             elif konfNama in ['no', 'n', 'tidak']:
+                                print('Data Pada Database Tidak Di Pebaharui')
                                 break
                             else:
                                 print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
@@ -309,8 +341,10 @@ def ubahData(nik):
                             konfJK = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Kelamin? [Yes/No]: ').lower()
                             if konfJK in ['yes', 'y', 'ya']:
                                 val[3] = jenisKelamin
+                                print('Data Pada Database Telah Di Pebaharui')
                                 break
                             elif konfJK in ['no', 'n', 'tidak']:
+                                print('Data Pada Database Tidak Di Pebaharui')
                                 break
                             else:
                                 print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
@@ -321,19 +355,23 @@ def ubahData(nik):
                             konfJenisKamar = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Kamar? [Yes/No]: ').lower()
                             if konfJenisKamar in ['yes', 'y', 'ya']:
                                 val[4] = jenisKamar
+                                print('Data Pada Database Telah Di Pebaharui')
                                 break
                             elif konfJenisKamar in ['no', 'n', 'tidak']:
+                                print('Data Pada Database Tidak Di Pebaharui')
                                 break
                             else:
                                 print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
                             break
                         elif kolomEdit == 'kota':
-                            kota = stringValidation(title='Masukan Kota Pasien: ')
+                            kota = input('Masukan Kota Pasien: ').title()
                             konfKota = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Kota? [Yes/No]: ').lower()
                             if konfKota in ['yes', 'y', 'ya']:
                                 val[5] = kota
+                                print('Data Pada Database Telah Di Pebaharui')
                                 break
                             elif konfKota in ['no', 'n', 'tidak']:
+                                print('Data Pada Database Tidak Di Pebaharui')
                                 break
                             else:
                                 print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
@@ -344,8 +382,10 @@ def ubahData(nik):
                             konfPenyakit = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Penyakit? [Yes/No]: ').lower()
                             if konfPenyakit in ['yes', 'y', 'ya']:
                                 val[6] = penyakit
+                                print('Data Pada Database Telah Di Pebaharui')
                                 break
                             elif konfPenyakit in ['no', 'n', 'tidak']:
+                                print('Data Pada Database Tidak Di Pebaharui')
                                 break
                             else:
                                 print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
@@ -356,8 +396,10 @@ def ubahData(nik):
                             konfJP = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Pembayaran? [Yes/No]: ').lower()
                             if konfJP in ['yes', 'y', 'ya']:
                                 val[7] = jenisPembayaran
+                                print('Data Pada Database Telah Di Pebaharui')
                                 break
                             elif konfJP in ['no', 'n', 'tidak']:
+                                print('Data Pada Database Tidak Di Pebaharui')
                                 break
                             else:
                                 print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
@@ -369,9 +411,7 @@ def ubahData(nik):
                         #Jika user menginputkannya tidak sesuai dengan pilihan
                         else:
                             print('Input yang anda masukan salah!. Silahkan Input Kembali')
-                            continue   
-                    #Memberitahu user bahwa data telah diperbaharui
-                    print('Data Pada Database Telah Di Pebaharui')
+                            continue
                     break
                 #Jika user tidak menginputkan yes atau no pada konfirmasi
                 else:
@@ -383,7 +423,7 @@ def ubahData(nik):
         print('NIK yang Anda Cari Tidak Ada di Dalam Data!')
 
 #Fungsi untuk menampilkan menu pada sub menu 4
-def subMenu4():
+def subMenu4(database):
     while True:
         # Menampilkan menu pada sub menu 4
         listMenu4 = [
@@ -400,22 +440,22 @@ def subMenu4():
 
         # Menjalankan fungsi sesuai pilihan menu
         if bilMenu4 == '1':
-            hapusData(daftarPasien)
+            hapusData(database)
         elif bilMenu4 == '2':
             break
         else:
             print('===Input anda salah. Silahkan input ulang!===')
 
 #Fungsi untuk menghapus data dari database
-def hapusData(nik):
+def hapusData(database):
     #Menampilkan data agar user mudah dalam mencari nik
-    tampilkan(daftarPasien)
+    tampilkan(database)
 
     #menginputkan nik yang akan dihapus
     nik = integerValidation(title='Masukan NIK yang ingin dihapus: ')
     
     #Melakukan iterasi untuk data pada database
-    for key, val in daftarPasien.items():
+    for key, val in database.items():
         #Jika idnik yang diinputkan sama dengan value pada index [1]
         if nik == val[1]:
             while True:
@@ -429,15 +469,15 @@ def hapusData(nik):
                 
                 #Jika user menginputkan iya maka data akan dihapus
                 elif konfirmasi in ['yes', 'y', 'ya']:
-                    del daftarPasien[key]
+                    del database[key]
 
                     #Perulangan untuk kolom no karena kolom tidak sesuai dengan index
                     #kolom no akan menyesuaikan
-                    for key, val in enumerate(daftarPasien.values()):
+                    for key, val in enumerate(database.values()):
                         if key != val[0]:
-                            daftarPasien[val[1]][0] = key + 1
+                            database[val[1]][0] = key + 1
                     print('\t\t\t=== Data Berhasil di Hapus dari Database ===')
-                    tampilkan(daftarPasien)
+                    tampilkan(database)
                     break 
                 
                 #jika user menginputkan selain yes atau no pada kolom konfirmasi
