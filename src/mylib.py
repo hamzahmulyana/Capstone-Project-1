@@ -3,7 +3,7 @@ from tabulate import tabulate
 #Fungsi untuk menampilkan database dalam bentuk tabulate
 def tampilkan(database, header=['No', 'NIK', 'Nama', 'Umur','Jenis Kelamin', 'Jenis Kamar', 'Kota', 'Penyakit', 'Jenis Pembayaran']):
     if len(database) == 0:
-        print('=== Data Tidak Ada ===')
+        print('=== Tidak Ada Data Dalam Database ===')
     else:
         database = urutNIK(database)
         print(tabulate(database.values(), headers=header, tablefmt='pretty'))
