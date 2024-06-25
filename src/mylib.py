@@ -3,9 +3,10 @@ from tabulate import tabulate
 #Fungsi untuk menampilkan database dalam bentuk tabulate
 def tampilkan(database, header=['No', 'NIK', 'Nama', 'Umur','Jenis Kelamin', 'Jenis Kamar', 'Kota', 'Penyakit', 'Jenis Pembayaran']):
     if len(database) == 0:
-        print('=== Tidak Ada Data Dalam Database ===')
+        print('=== Tidak Ada Data Dalam Database! ===')
     else:
         database = urutNIK(database)
+        print('\n\t\t\t=========== Data Pasien Dalam Rumah Sakit ===========')
         print(tabulate(database.values(), headers=header, tablefmt='pretty'))
 
 #Fungsi untuk menampilkan menu
@@ -131,7 +132,6 @@ def subMenu1(database):
 
         # Menjalankan fungsi sesuai pilihan menu
         if bilMenu1 == '1':
-            print('\t\t\t=========== Data Pasien Dalam Rumah Sakit ===========')
             tampilkan(database)
         elif bilMenu1 == '2':
             pasienBerdasarkanNIK(database)
@@ -145,7 +145,7 @@ def pasienBerdasarkanNIK(database):
     #Memeriksa apakah di database terdapat data
     #Jika tidak ada data maka tampilkan seperti dibawah
     if len(database) == 0:
-        print('=== Tidak Ada Data Dalam Database ===')
+        tampilkan(database)
     #Jika terdapat data dalam database program dibawah dijalankan
     else:
         #Membuat dictionary kosong untuk memasukan data
@@ -169,7 +169,6 @@ def pasienBerdasarkanNIK(database):
                     dataNIK.update({nik: valCopy})
 
                     #Menampilkan data sesuai dengan NIK yang dimasukan
-                    print('\n\t\t== Data Pasien Berdasarkan NIK yang Di Cari Pada Rumah Sakit ==')
                     tampilkan(database=dataNIK, header=['No', 'NIK', 'Nama', 'Umur', 'Jenis Kelamin', 'Jenis Kamar', 'Kota', 'Penyakit', 'Jenis Pembayaran'])
                     break
             #Jika NIK tidak terdapat dalam database
@@ -268,7 +267,6 @@ def tambahData(database):
                     elif konfirmasi in ['yes', 'y', 'ya']:
                         database.update({nik: listValue})
                         print('=== Data Sudah Tersimpan ke Database ===')
-                        print('\n\t\t\t=========== Data Pasien Dalam Rumah Sakit ===========')
                         tampilkan(database)
                         break
 
@@ -315,209 +313,218 @@ def subMenu3(database):
 
 #Fungsi untuk mengubah data pada database
 def ubahData(database):
-    #Menampilkan database agar memudahkan user
-    tampilkan(database)
-
     #Membuat dict kosong untuk nantinya ditampilkan sementara
     dataSementara = {}
 
-    #Menginput idnik yang ingin diubah
-    nik = integerValidation(title='Masukan NIK yang ingin diubah datanya: ')
-
-    if len(str(nik)) == 3:
-        #Melakukan iterasi key dan value pada database
-        for key, val in database.items():
-            if nik == key:
-                #Memasukan data yang NIK nya sama dengan idNik yang dimasukan
-                dataSementara.update({nik: database[nik]})
-                tampilkan(dataSementara)
-
-                while True:
-                    #Melakukan konfirmasi kepada user
-                    konfirmasi = stringValidation(title='Apakah anda yakin ingin mengedit data ini? [Yes/No]: ').lower()
-                    
-                    #Jika user menginputkan tidak
-                    if konfirmasi in ['no', 'n', 'tidak']:
-                        print('=== Data Tidak Jadi di Edit ===')
-                        break
-
-                    #Jika user menginputkan iya
-                    elif konfirmasi in ['yes', 'y', 'ya']:
-                        while True:
-                            #Memberi pilihan keuser kolom mana yang ingin di edit
-                            kolomEdit = spaceValidation('Masukan Kolom Yang Ingin di Edit: ').lower()
-                            #Kolom nama
-                            if kolomEdit == 'nama':
-                                nama = input('Masukan Nama Pasien: ').title()
-                                if any(pasien[2] == nama for pasien in database.values()):
-                                    print(f'Data tidak dapat ditambahkan karena duplikasi pada nama dan umur: {nama}')
-                                    break
-                                konfNama = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Nama? [Yes/No]: ').lower()
-                                if konfNama in ['yes', 'y', 'ya']:
-                                    val[2] = nama
-                                    print('Data Pada Database Telah Di Pebaharui')
-                                    break
-                                elif konfNama in ['no', 'n', 'tidak']:
-                                    print('Data Pada Database Tidak Di Pebaharui')
-                                    break
-                                else:
-                                    print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
-                                break
-                            #Kolom Umur
-                            if kolomEdit == 'umur':
-                                umur = integerValidation(title='Masukan Umur Pasien: ')
-                                konfUmur = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Nama? [Yes/No]: ').lower()
-                                if konfUmur in ['yes', 'y', 'ya']:
-                                    val[2] = umur
-                                    print('Data Pada Database Telah Di Pebaharui')
-                                    break
-                                elif konfUmur in ['no', 'n', 'tidak']:
-                                    print('Data Pada Database Tidak Di Pebaharui')
-                                    break
-                                else:
-                                    print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
-                                break
-                            #Kolom kamar
-                            elif kolomEdit == 'jeniskelamin':
-                                jenisKelamin = inputGender()
-                                konfJK = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Kelamin? [Yes/No]: ').lower()
-                                if konfJK in ['yes', 'y', 'ya']:
-                                    val[4] = jenisKelamin
-                                    print('Data Pada Database Telah Di Pebaharui')
-                                    break
-                                elif konfJK in ['no', 'n', 'tidak']:
-                                    print('Data Pada Database Tidak Di Pebaharui')
-                                    break
-                                else:
-                                    print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
-                                break
-                            #Kolom jenis kelamin
-                            elif kolomEdit == 'jeniskamar':
-                                jenisKamar = inputKamar()
-                                konfJenisKamar = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Kamar? [Yes/No]: ').lower()
-                                if konfJenisKamar in ['yes', 'y', 'ya']:
-                                    val[5] = jenisKamar
-                                    print('Data Pada Database Telah Di Pebaharui')
-                                    break
-                                elif konfJenisKamar in ['no', 'n', 'tidak']:
-                                    print('Data Pada Database Tidak Di Pebaharui')
-                                    break
-                                else:
-                                    print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
-                                break
-                            elif kolomEdit == 'kota':
-                                kota = input('Masukan Kota Pasien: ').title()
-                                konfKota = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Kota? [Yes/No]: ').lower()
-                                if konfKota in ['yes', 'y', 'ya']:
-                                    val[6] = kota
-                                    print('Data Pada Database Telah Di Pebaharui')
-                                    break
-                                elif konfKota in ['no', 'n', 'tidak']:
-                                    print('Data Pada Database Tidak Di Pebaharui')
-                                    break
-                                else:
-                                    print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
-                                break
-                            #Kolom penyakit
-                            elif kolomEdit == 'penyakit':
-                                penyakit = input('Masukan Penyakit Pasien: ').title()
-                                konfPenyakit = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Penyakit? [Yes/No]: ').lower()
-                                if konfPenyakit in ['yes', 'y', 'ya']:
-                                    val[7] = penyakit
-                                    print('Data Pada Database Telah Di Pebaharui')
-                                    break
-                                elif konfPenyakit in ['no', 'n', 'tidak']:
-                                    print('Data Pada Database Tidak Di Pebaharui')
-                                    break
-                                else:
-                                    print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
-                                break
-                            #Kolom jenis pembayaran
-                            elif kolomEdit == 'jenispembayaran':
-                                jenisPembayaran = inputJenisPembayaran()
-                                konfJP = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Pembayaran? [Yes/No]: ').lower()
-                                if konfJP in ['yes', 'y', 'ya']:
-                                    val[8] = jenisPembayaran
-                                    print('Data Pada Database Telah Di Pebaharui')
-                                    break
-                                elif konfJP in ['no', 'n', 'tidak']:
-                                    print('Data Pada Database Tidak Di Pebaharui')
-                                    break
-                                else:
-                                    print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
-                                break
-                            #Untuk kolom nik dan no tidak dapat diubah
-                            elif kolomEdit == 'nik' or kolomEdit == 'no':
-                                print('Kolom No dan NIK tidak dapat di Ubah!')
-                                continue
-                            #Jika user menginputkannya tidak sesuai dengan pilihan
-                            else:
-                                print('Input yang anda masukan salah!. Silahkan Input Kembali')
-                                continue
-                        break
-                    #Jika user tidak menginputkan yes atau no pada konfirmasi
-                    else:
-                        print("Input tidak valid. Silahkan masukkan 'Yes' atau 'No'.")
-                        continue
-                break
-        #Jika nik yang di inputkan tidak sesuai dengan yang didata
-        else:
-            print('NIK yang Anda Cari Tidak Ada di Dalam Data!')
+    if len(database) == 0:
+        print('=== Tidak Ada Data Dalam Database! ===')
     else:
-        print('NIK Harus Berjumlah 3 Digit!')
+        #Menampilkan database
+        tampilkan(database)
+
+        #Menginput idnik yang ingin diubah
+        nik = integerValidation(title='Masukan NIK yang ingin diubah datanya: ')
+
+        if len(str(nik)) == 3:
+            #Melakukan iterasi key dan value pada database
+            for key, val in database.items():
+                if nik == key:
+                    #Memasukan data yang NIK nya sama dengan idNik yang dimasukan
+                    dataSementara.update({nik: database[nik]})
+                    tampilkan(dataSementara)
+
+                    while True:
+                        #Melakukan konfirmasi kepada user
+                        konfirmasi = stringValidation(title='Apakah anda yakin ingin mengedit data ini? [Yes/No]: ').lower()
+                        
+                        #Jika user menginputkan tidak
+                        if konfirmasi in ['no', 'n', 'tidak']:
+                            print('=== Data Tidak Jadi di Edit ===')
+                            break
+
+                        #Jika user menginputkan iya
+                        elif konfirmasi in ['yes', 'y', 'ya']:
+                            while True:
+                                #Memberi pilihan keuser kolom mana yang ingin di edit
+                                kolomEdit = spaceValidation('Masukan Kolom Yang Ingin di Edit: ').lower()
+                                #Kolom nama
+                                if kolomEdit == 'nama':
+                                    nama = input('Masukan Nama Pasien: ').title()
+                                    if any((pasien[2] == nama) and (pasien[3] == database[nik][3]) for pasien in database.values()):
+                                        print(f'Data tidak dapat ditambahkan karena duplikasi pada nama dan umur: {nama}')
+                                        break
+                                    konfNama = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Nama? [Yes/No]: ').lower()
+                                    if konfNama in ['yes', 'y', 'ya']:
+                                        val[2] = nama
+                                        print('Data Pada Database Telah Di Pebaharui')
+                                        break
+                                    elif konfNama in ['no', 'n', 'tidak']:
+                                        print('Data Pada Database Tidak Di Pebaharui')
+                                        break
+                                    else:
+                                        print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
+                                    break
+                                #Kolom Umur
+                                if kolomEdit == 'umur':
+                                    umur = integerValidation(title='Masukan Umur Pasien: ')
+                                    if any((pasien[3] == umur) and (pasien[2] == database[nik][2]) for pasien in database.values()):
+                                        print(f'Data tidak dapat ditambahkan karena duplikasi pada nama dan umur: {umur}')
+                                        break
+                                    konfUmur = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Nama? [Yes/No]: ').lower()
+                                    if konfUmur in ['yes', 'y', 'ya']:
+                                        val[3] = umur
+                                        print('Data Pada Database Telah Di Pebaharui')
+                                        break
+                                    elif konfUmur in ['no', 'n', 'tidak']:
+                                        print('Data Pada Database Tidak Di Pebaharui')
+                                        break
+                                    else:
+                                        print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
+                                    break
+                                #Kolom kamar
+                                elif kolomEdit == 'jeniskelamin':
+                                    jenisKelamin = inputGender()
+                                    konfJK = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Kelamin? [Yes/No]: ').lower()
+                                    if konfJK in ['yes', 'y', 'ya']:
+                                        val[4] = jenisKelamin
+                                        print('Data Pada Database Telah Di Pebaharui')
+                                        break
+                                    elif konfJK in ['no', 'n', 'tidak']:
+                                        print('Data Pada Database Tidak Di Pebaharui')
+                                        break
+                                    else:
+                                        print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
+                                    break
+                                #Kolom jenis kelamin
+                                elif kolomEdit == 'jeniskamar':
+                                    jenisKamar = inputKamar()
+                                    konfJenisKamar = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Kamar? [Yes/No]: ').lower()
+                                    if konfJenisKamar in ['yes', 'y', 'ya']:
+                                        val[5] = jenisKamar
+                                        print('Data Pada Database Telah Di Pebaharui')
+                                        break
+                                    elif konfJenisKamar in ['no', 'n', 'tidak']:
+                                        print('Data Pada Database Tidak Di Pebaharui')
+                                        break
+                                    else:
+                                        print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
+                                    break
+                                elif kolomEdit == 'kota':
+                                    kota = input('Masukan Kota Pasien: ').title()
+                                    konfKota = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Kota? [Yes/No]: ').lower()
+                                    if konfKota in ['yes', 'y', 'ya']:
+                                        val[6] = kota
+                                        print('Data Pada Database Telah Di Pebaharui')
+                                        break
+                                    elif konfKota in ['no', 'n', 'tidak']:
+                                        print('Data Pada Database Tidak Di Pebaharui')
+                                        break
+                                    else:
+                                        print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
+                                    break
+                                #Kolom penyakit
+                                elif kolomEdit == 'penyakit':
+                                    penyakit = input('Masukan Penyakit Pasien: ').title()
+                                    konfPenyakit = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Penyakit? [Yes/No]: ').lower()
+                                    if konfPenyakit in ['yes', 'y', 'ya']:
+                                        val[7] = penyakit
+                                        print('Data Pada Database Telah Di Pebaharui')
+                                        break
+                                    elif konfPenyakit in ['no', 'n', 'tidak']:
+                                        print('Data Pada Database Tidak Di Pebaharui')
+                                        break
+                                    else:
+                                        print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
+                                    break
+                                #Kolom jenis pembayaran
+                                elif kolomEdit == 'jenispembayaran':
+                                    jenisPembayaran = inputJenisPembayaran()
+                                    konfJP = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Pembayaran? [Yes/No]: ').lower()
+                                    if konfJP in ['yes', 'y', 'ya']:
+                                        val[8] = jenisPembayaran
+                                        print('Data Pada Database Telah Di Pebaharui')
+                                        break
+                                    elif konfJP in ['no', 'n', 'tidak']:
+                                        print('Data Pada Database Tidak Di Pebaharui')
+                                        break
+                                    else:
+                                        print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
+                                    break
+                                #Untuk kolom nik dan no tidak dapat diubah
+                                elif kolomEdit == 'nik' or kolomEdit == 'no':
+                                    print('Kolom No dan NIK tidak dapat di Ubah!')
+                                    continue
+                                #Jika user menginputkannya tidak sesuai dengan pilihan
+                                else:
+                                    print('Input yang anda masukan salah!. Silahkan Input Kembali')
+                                    continue
+                            break
+                        #Jika user tidak menginputkan yes atau no pada konfirmasi
+                        else:
+                            print("Input tidak valid. Silahkan masukkan 'Yes' atau 'No'.")
+                            continue
+                    break
+            #Jika nik yang di inputkan tidak sesuai dengan yang didata
+            else:
+                print('NIK yang Anda Cari Tidak Ada di Dalam Data!')
+        else:
+            print('NIK Harus Berjumlah 3 Digit!')
 
 def ubahSemuaData(database):
-    #Menampilkan database agar memudahkan user
-    tampilkan(database)
-
     #Membuat dict kosong untuk nantinya ditampilkan sementara
     dataSementara = {}
 
-    #Menginput idnik yang ingin diubah
-    nik = integerValidation(title='Masukan NIK yang ingin diubah datanya: ')
-
-    if len(str(nik)) == 3:
-        #Melakukan iterasi key dan value pada database
-        for key, val in database.items():
-            if nik == key:
-                #Memasukan data yang NIK nya sama dengan idNik yang dimasukan
-                dataSementara.update({nik: database[nik]})
-                tampilkan(dataSementara)
-
-                while True:
-                    #Melakukan konfirmasi kepada user
-                    konfirmasi = stringValidation(title='Apakah anda yakin ingin mengedit data ini? [Yes/No]: ').lower()
-                    
-                    #Jika user menginputkan tidak
-                    if konfirmasi in ['no', 'n', 'tidak']:
-                        print('=== Data Tidak Jadi di Edit ===')
-                        break
-
-                    #Jika user menginputkan iya
-                    elif konfirmasi in ['yes', 'y', 'ya']:
-                        nama = input('Masukan Nama Pasien: ').title()
-                        umur = integerValidation(title='Masukan Umur Pasien: ')
-                        if any(pasien[2] == nama and pasien[3] == umur for pasien in database.values()):
-                            print(f'Data tidak dapat ditambahkan karena duplikasi pada nama dan umur: {nama}, {umur}')
-                            break
-                        jenisKelamin = inputGender()
-                        jenisKamar = inputKamar()
-                        kota = input('Masukan Kota Pasien: ').title()
-                        jenisPenyakit = input('Masukan Penyakit Pasien: ').title()
-                        jenisPembayaran = inputJenisPembayaran()
-
-                        konf = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Pembayaran? [Yes/No]: ').lower()
-                        if konf in ['yes', 'y', 'ya']:
-                            val[2], val[3], val[4], val[5], val[6], val[7], val[8] = nama, umur, jenisKelamin, jenisKamar, kota, jenisPenyakit, jenisPembayaran
-                            print('Data Pada Database Telah Di Pebaharui')
-                            break
-                        elif konf in ['no', 'n', 'tidak']:
-                            print('Data Pada Database Tidak Di Pebaharui')
-                            break
-                        else:
-                            print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
+    if len(database) == 0:
+        print('=== Tidak Ada Data Dalam Database! ===')
     else:
-        print('NIK Harus Berjumlah 3 Digit!')
+        #Menampilkan database
+        tampilkan(database)
+
+        #Menginput idnik yang ingin diubah
+        nik = integerValidation(title='Masukan NIK yang ingin diubah datanya: ')
+
+        if len(str(nik)) == 3:
+            #Melakukan iterasi key dan value pada database
+            for key, val in database.items():
+                if nik == key:
+                    #Memasukan data yang NIK nya sama dengan idNik yang dimasukan
+                    dataSementara.update({nik: database[nik]})
+                    tampilkan(dataSementara)
+
+                    while True:
+                        #Melakukan konfirmasi kepada user
+                        konfirmasi = stringValidation(title='Apakah anda yakin ingin mengedit data ini? [Yes/No]: ').lower()
+                        
+                        #Jika user menginputkan tidak
+                        if konfirmasi in ['no', 'n', 'tidak']:
+                            print('=== Data Tidak Jadi di Edit ===')
+                            break
+
+                        #Jika user menginputkan iya
+                        elif konfirmasi in ['yes', 'y', 'ya']:
+                            nama = input('Masukan Nama Pasien: ').title()
+                            umur = integerValidation(title='Masukan Umur Pasien: ')
+                            if any(pasien[2] == nama and pasien[3] == umur for pasien in database.values()):
+                                print(f'Data tidak dapat ditambahkan karena duplikasi pada nama dan umur: {nama}, {umur}')
+                                break
+                            jenisKelamin = inputGender()
+                            jenisKamar = inputKamar()
+                            kota = input('Masukan Kota Pasien: ').title()
+                            jenisPenyakit = input('Masukan Penyakit Pasien: ').title()
+                            jenisPembayaran = inputJenisPembayaran()
+
+                            konf = stringValidation(title='Apakah Anda Yakin Ingin Mengganti Jenis Pembayaran? [Yes/No]: ').lower()
+                            if konf in ['yes', 'y', 'ya']:
+                                val[2], val[3], val[4], val[5], val[6], val[7], val[8] = nama, umur, jenisKelamin, jenisKamar, kota, jenisPenyakit, jenisPembayaran
+                                print('Data Pada Database Telah Di Pebaharui')
+                                break
+                            elif konf in ['no', 'n', 'tidak']:
+                                print('Data Pada Database Tidak Di Pebaharui')
+                                break
+                            else:
+                                print("Input Tidak Valid. Silahkan Masukan 'Yes' atau 'No'.")
+        else:
+            print('NIK Harus Berjumlah 3 Digit!')
 
 #Fungsi untuk menampilkan menu pada sub menu 4
 def subMenu4(database):
@@ -545,51 +552,54 @@ def subMenu4(database):
 
 #Fungsi untuk menghapus data dari database
 def hapusData(database):
-    #Menampilkan data agar user mudah dalam mencari nik
-    tampilkan(database)
-
     #Membuat dictionary sementara untuk menampilkan database
     dataDelete = {}
 
-    #menginputkan nik yang akan dihapus
-    nik = integerValidation(title='Masukan NIK yang ingin dihapus: ')
-    
-    if len(str(nik)) == 3:
-        #Melakukan iterasi untuk data pada database
-        for key, val in database.items():
-            #Jika idnik yang diinputkan sama dengan value pada index [1]
-            if nik == val[1]:
-                while True:
-                    #Menampilkan database yang akan dihapus
-                    dataDelete.update({nik: val})
-                    tampilkan(dataDelete)
-
-                    #Konfirmasi apakah ingin menghapus data
-                    konfirmasi = stringValidation('Apakah Anda ingin menghapus data? [Yes/No]: ').lower()
-
-                    #Jika user menginputkan tidak maka data tidak akan dihpaus
-                    if konfirmasi in ['no', 'n', 'tidak']:
-                        print('=== Data Gagal di Hapus dari Database ===')
-                        return
-                    
-                    #Jika user menginputkan iya maka data akan dihapus
-                    elif konfirmasi in ['yes', 'y', 'ya']:
-                        del database[key]
-
-                        #Perulangan untuk kolom no karena kolom tidak sesuai dengan index
-                        #kolom no akan menyesuaikan
-                        for key, val in enumerate(database.values()):
-                            if key != val[0]:
-                                database[val[1]][0] = key + 1
-                        print('=== Data Berhasil di Hapus dari Database ===')
-                        break 
-                    
-                    #jika user menginputkan selain yes atau no pada kolom konfirmasi
-                    else:
-                        print("Input tidak valid. Silahkan masukkan 'Yes' atau 'No'.")
-                break
-        #Jika nik yang di inputkan tidak ada dalam data
-        else:
-            print('NIK yang Anda Masukan Tidak Ada dalam Database. Silahkan Inputkan Ulang!')
+    if len(database) == 0:
+        print('=== Tidak Ada Data Dalam Database! ===')
     else:
-        print('NIK Harus Berjumlah 3 Digit!')
+        #Menampilkan database
+        tampilkan(database)
+        
+        #menginputkan nik yang akan dihapus
+        nik = integerValidation(title='Masukan NIK yang ingin dihapus: ')
+        
+        if len(str(nik)) == 3:
+            #Melakukan iterasi untuk data pada database
+            for key, val in database.items():
+                #Jika idnik yang diinputkan sama dengan value pada index [1]
+                if nik == val[1]:
+                    while True:
+                        #Menampilkan database yang akan dihapus
+                        dataDelete.update({nik: val})
+                        tampilkan(dataDelete)
+
+                        #Konfirmasi apakah ingin menghapus data
+                        konfirmasi = stringValidation('Apakah Anda ingin menghapus data? [Yes/No]: ').lower()
+
+                        #Jika user menginputkan tidak maka data tidak akan dihpaus
+                        if konfirmasi in ['no', 'n', 'tidak']:
+                            print('=== Data Gagal di Hapus dari Database ===')
+                            return
+                        
+                        #Jika user menginputkan iya maka data akan dihapus
+                        elif konfirmasi in ['yes', 'y', 'ya']:
+                            del database[key]
+
+                            #Perulangan untuk kolom no karena kolom tidak sesuai dengan index
+                            #kolom no akan menyesuaikan
+                            for key, val in enumerate(database.values()):
+                                if key != val[0]:
+                                    database[val[1]][0] = key + 1
+                            print('=== Data Berhasil di Hapus dari Database ===')
+                            break 
+                        
+                        #jika user menginputkan selain yes atau no pada kolom konfirmasi
+                        else:
+                            print("Input tidak valid. Silahkan masukkan 'Yes' atau 'No'.")
+                    break
+            #Jika nik yang di inputkan tidak ada dalam data
+            else:
+                print('NIK yang Anda Masukan Tidak Ada dalam Database. Silahkan Inputkan Ulang!')
+        else:
+            print('NIK Harus Berjumlah 3 Digit!')
